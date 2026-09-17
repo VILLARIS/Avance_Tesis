@@ -17,7 +17,7 @@ import {
   FaTiktok,
 } from "react-icons/fa";
 
-import navbarLogo from "../../assets/Navbar/navbarLogo.png";
+import navbarLogo from "../../assets/navbar/navbarLogo.png";
 
 export default function Navbar() {
   const [visible, setVisible] = useState(true);
