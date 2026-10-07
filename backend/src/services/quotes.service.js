@@ -6,13 +6,28 @@ export async function listQuotes() {
     `SELECT q.id, q.lead_id, q.code, q.project_type, q.sections_count,
             q.estimated_min, q.estimated_max, q.estimated_weeks_min,
             q.estimated_weeks_max, q.status, q.notes, q.created_at, q.updated_at,
-            l.full_name AS lead_name, l.email AS lead_email, l.phone AS lead_phone
+            l.full_name AS lead_name, l.email AS lead_email, l.phone AS lead_phone,
+            l.company_name AS lead_company, l.message AS lead_message
      FROM quotes q
      LEFT JOIN leads l ON l.id = q.lead_id
      ORDER BY q.created_at DESC`
   );
 
   return rows;
+}
+
+export async function updateQuoteStatus(id, status) {
+  const { rows } = await query(
+    `UPDATE quotes
+     SET status = $1, updated_at = NOW()
+     WHERE id = $2
+     RETURNING id, lead_id, code, project_type, sections_count, estimated_min,
+               estimated_max, estimated_weeks_min, estimated_weeks_max, status,
+               notes, created_at, updated_at`,
+    [status, id]
+  );
+
+  return rows[0] ?? null;
 }
 
 export async function createQuote(data, existingClient = null) {

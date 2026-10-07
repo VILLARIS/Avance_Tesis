@@ -99,3 +99,43 @@ export async function createQuote(req, res, next) {
     return next(error);
   }
 }
+
+/**
+ * Actualiza únicamente el estado de una cotización existente.
+ * PATCH /api/quotes/:id/status
+ */
+export async function updateQuoteStatus(req, res, next) {
+  try {
+    const quoteId = toIntegerOrNull(req.params.id);
+    const status = toNullableString(req.body?.status);
+
+    const errors = [];
+
+    if (quoteId === null || quoteId <= 0) {
+      errors.push('id debe ser un entero positivo.');
+    }
+
+    if (!status) {
+      errors.push('status es obligatorio.');
+    } else if (!ALLOWED_STATUSES.includes(status)) {
+      errors.push(`status debe ser uno de: ${ALLOWED_STATUSES.join(', ')}.`);
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({ error: 'Validación fallida.', details: errors });
+    }
+
+    const quote = await quotesService.updateQuoteStatus(quoteId, status);
+
+    if (!quote) {
+      return res.status(404).json({
+        error: 'No se encontró la cotización solicitada.',
+        details: [`No existe una cotización con id ${quoteId}.`],
+      });
+    }
+
+    return res.json({ data: quote });
+  } catch (error) {
+    return next(error);
+  }
+}

@@ -11,3 +11,38 @@ body,
 body {
   min-height: 100vh;
 }
+
+@keyframes adminOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes adminModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-overlay-in {
+  animation: adminOverlayIn 180ms ease-out both;
+}
+
+.admin-modal-in {
+  animation: adminModalIn 200ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-overlay-in,
+  .admin-modal-in {
+    animation: none;
+  }
+}

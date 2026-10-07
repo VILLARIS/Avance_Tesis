@@ -68,6 +68,26 @@ export function getHealth() {
   return apiRequest("/health");
 }
 
+/**
+ * Devuelve la lista de cotizaciones/solicitudes registradas.
+ * GET /api/quotes
+ */
+export async function getQuotes() {
+  const body = await apiRequest("/quotes");
+  return body?.data ?? [];
+}
+
+/**
+ * Actualiza el estado de una cotización.
+ * PATCH /api/quotes/:id/status
+ */
+export function updateQuoteStatus(id, status) {
+  return apiRequest(`/quotes/${id}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+}
+
 export function createLead(data) {
   return apiRequest("/leads", {
     method: "POST",

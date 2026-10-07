@@ -10,6 +10,18 @@ const PROJECT_TYPE_SLUGS = {
 
 export const QUOTE_SOURCE = "web_quote";
 
+const PROJECT_TYPE_LABELS_BY_SLUG = {
+  landing_page: "Landing page",
+  corporate_web: "Web corporativa",
+  ecommerce: "Tienda online",
+  web_system: "Sistema web",
+  other: "Otro",
+};
+
+export function getProjectTypeLabelBySlug(slug) {
+  return PROJECT_TYPE_LABELS_BY_SLUG[slug] ?? slug ?? null;
+}
+
 export function getProjectTypeLabel(value) {
   return getSummaryLabel(getStepById("projectType"), value) ?? null;
 }
