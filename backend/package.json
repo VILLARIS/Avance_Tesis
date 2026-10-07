@@ -1,0 +1,23 @@
+{
+  "name": "predict-sale-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "API REST del sistema web de ventas - proyecto de tesis. Primera etapa: cimientos full-stack.",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "db:migrate": "node database/scripts/migrate.js",
+    "db:seed": "node database/scripts/seed.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  }
+}
