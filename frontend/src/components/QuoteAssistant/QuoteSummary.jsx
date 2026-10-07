@@ -15,33 +15,14 @@ import { formatPriceRange, formatWeeks } from "../../utils/formatQuote";
 
 const PENDING = "Pendiente";
 
-export default function QuoteSummary({ flow }) {
+export default function QuoteSummary({ flow, onRequest }) {
   const { answers, quote, isComplete, reset } = flow;
 
   const projectTypeStep = getStepById("projectType");
-  const sectionsStep = getStepById("sections");
-  const integrationsStep = getStepById("integrations");
 
   const handleRequest = () => {
     if (!isComplete) return;
-
-    const quoteData = {
-      answers,
-      projectType: getSummaryLabel(projectTypeStep, answers.projectType),
-      sections: getSummaryLabel(sectionsStep, answers.sections),
-      integrations: getSummaryLabel(integrationsStep, answers.integrations),
-      designStatus: getSummaryLabel(
-        getStepById("designStatus"),
-        answers.designStatus
-      ),
-      deadline: getSummaryLabel(getStepById("deadline"), answers.deadline),
-      additionalDetails: answers.additionalDetails,
-      estimatedTime: formatWeeks(quote.weeksMin, quote.weeksMax),
-      investmentRange: formatPriceRange(quote.estimatedMin, quote.estimatedMax),
-      estimatedTotal: quote.total,
-    };
-
-    console.info("[quote] Cotización lista", quoteData);
+    onRequest?.();
   };
 
   return (

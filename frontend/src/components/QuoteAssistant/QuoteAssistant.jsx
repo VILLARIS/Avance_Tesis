@@ -1,9 +1,31 @@
+import { useCallback, useState } from "react";
+
 import useQuoteFlow from "../../hooks/useQuoteFlow";
 import ChatPanel from "./ChatPanel";
+import QuoteRequestForm from "./QuoteRequestForm";
 import QuoteSummary from "./QuoteSummary";
 
 export default function QuoteAssistant() {
     const flow = useQuoteFlow();
+    const [isFormOpen, setIsFormOpen] = useState(false);
+
+    const { isComplete, answers, quote, reset } = flow;
+
+    const handleOpenForm = useCallback(() => {
+        if (isComplete) setIsFormOpen(true);
+    }, [isComplete]);
+
+    const handleCloseForm = useCallback(() => {
+        setIsFormOpen(false);
+    }, []);
+
+    const handleStartOver = useCallback(() => {
+        setIsFormOpen(false);
+        reset();
+        document
+            .getElementById("cotizador")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, [reset]);
 
     return (
         <section
@@ -80,9 +102,18 @@ export default function QuoteAssistant() {
           "
                 >
                     <ChatPanel flow={flow} />
-                    <QuoteSummary flow={flow} />
+                    <QuoteSummary flow={flow} onRequest={handleOpenForm} />
                 </div>
             </div>
+
+            {isFormOpen && (
+                <QuoteRequestForm
+                    answers={answers}
+                    quote={quote}
+                    onClose={handleCloseForm}
+                    onStartOver={handleStartOver}
+                />
+            )}
         </section>
     );
 }

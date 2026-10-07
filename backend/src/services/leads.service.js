@@ -1,4 +1,4 @@
-import { query } from '../config/db.js';
+import { pool, query } from '../config/db.js';
 
 export async function listLeads() {
   const { rows } = await query(
@@ -16,10 +16,10 @@ export async function findLeadById(id) {
   return rows[0] ?? null;
 }
 
-export async function createLead(data) {
+export async function createLead(data, client = pool) {
   const { full_name, company_name, email, phone, message, source } = data;
 
-  const { rows } = await query(
+  const { rows } = await client.query(
     `INSERT INTO leads (full_name, company_name, email, phone, message, source)
      VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING id, full_name, company_name, email, phone, message, source, status,

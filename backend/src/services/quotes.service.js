@@ -15,7 +15,7 @@ export async function listQuotes() {
   return rows;
 }
 
-export async function createQuote(data) {
+export async function createQuote(data, existingClient = null) {
   const {
     lead_id,
     project_type,
@@ -28,10 +28,15 @@ export async function createQuote(data) {
     notes,
   } = data;
 
-  const client = await pool.connect();
+  // Si nos pasan un cliente ya abierto, reutilizamos su transacción; en caso
+  // contrario abrimos una propia para mantener el comportamiento original.
+  const client = existingClient ?? (await pool.connect());
+  const ownsTransaction = !existingClient;
 
   try {
-    await client.query('BEGIN');
+    if (ownsTransaction) {
+      await client.query('BEGIN');
+    }
 
     // Reserva el id desde la secuencia para poder construir el código en un solo paso.
     const sequence = await client.query(
@@ -64,12 +69,19 @@ export async function createQuote(data) {
       ]
     );
 
-    await client.query('COMMIT');
+    if (ownsTransaction) {
+      await client.query('COMMIT');
+    }
+
     return rows[0];
   } catch (error) {
-    await client.query('ROLLBACK');
+    if (ownsTransaction) {
+      await client.query('ROLLBACK');
+    }
     throw error;
   } finally {
-    client.release();
+    if (ownsTransaction) {
+      client.release();
+    }
   }
 }
