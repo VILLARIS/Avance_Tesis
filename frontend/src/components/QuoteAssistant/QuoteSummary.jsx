@@ -7,9 +7,43 @@ import {
   ArrowRight,
   Lightbulb,
   ClipboardList,
+  RotateCcw,
 } from "lucide-react";
 
-export default function QuoteSummary() {
+import { getStepById, getSummaryLabel } from "../../data/quoteQuestions";
+import { formatPriceRange, formatWeeks } from "../../utils/formatQuote";
+
+const PENDING = "Pendiente";
+
+export default function QuoteSummary({ flow }) {
+  const { answers, quote, isComplete, reset } = flow;
+
+  const projectTypeStep = getStepById("projectType");
+  const sectionsStep = getStepById("sections");
+  const integrationsStep = getStepById("integrations");
+
+  const handleRequest = () => {
+    if (!isComplete) return;
+
+    const quoteData = {
+      answers,
+      projectType: getSummaryLabel(projectTypeStep, answers.projectType),
+      sections: getSummaryLabel(sectionsStep, answers.sections),
+      integrations: getSummaryLabel(integrationsStep, answers.integrations),
+      designStatus: getSummaryLabel(
+        getStepById("designStatus"),
+        answers.designStatus
+      ),
+      deadline: getSummaryLabel(getStepById("deadline"), answers.deadline),
+      additionalDetails: answers.additionalDetails,
+      estimatedTime: formatWeeks(quote.weeksMin, quote.weeksMax),
+      investmentRange: formatPriceRange(quote.estimatedMin, quote.estimatedMax),
+      estimatedTotal: quote.total,
+    };
+
+    console.info("[quote] Cotización lista", quoteData);
+  };
+
   return (
     <aside
       className="
@@ -58,31 +92,34 @@ export default function QuoteSummary() {
           <SummaryRow
             icon={Monitor}
             label="Tipo de web"
-            value="Web corporativa"
+            value={getSummaryLabel(projectTypeStep, answers.projectType)}
           />
 
           <SummaryRow
             icon={PanelsTopLeft}
             label="Secciones"
-            value="4 - 6"
+            value={getSummaryLabel(getStepById("sections"), answers.sections)}
           />
 
           <SummaryRow
             icon={Puzzle}
             label="Integraciones"
-            value="WhatsApp + Formulario de contacto"
+            value={getSummaryLabel(
+              getStepById("integrations"),
+              answers.integrations
+            )}
           />
 
           <SummaryRow
             icon={Clock3}
             label="Tiempo estimado"
-            value="2 - 3 semanas"
+            value={formatWeeks(quote.weeksMin, quote.weeksMax)}
           />
 
           <SummaryRow
             icon={Coins}
             label="Inversión referencial"
-            value="S/ 1,800 - S/ 2,600"
+            value={formatPriceRange(quote.estimatedMin, quote.estimatedMax)}
             highlight
           />
         </div>
@@ -114,6 +151,8 @@ export default function QuoteSummary() {
         {/* CTA */}
         <button
           type="button"
+          onClick={handleRequest}
+          disabled={!isComplete}
           className="
             mt-4
             flex
@@ -132,23 +171,53 @@ export default function QuoteSummary() {
             transition
             hover:-translate-y-0.5
             hover:bg-[#0f31e6]
+            disabled:cursor-not-allowed
+            disabled:opacity-50
+            disabled:hover:translate-y-0
+            disabled:hover:bg-[#173cff]
           "
         >
           Solicitar propuesta completa
 
           <ArrowRight size={17} />
         </button>
+
+        {isComplete && (
+          <button
+            type="button"
+            onClick={reset}
+            className="
+              mt-3
+              flex
+              w-full
+              items-center
+              justify-center
+              gap-2
+              rounded-xl
+              border
+              border-slate-200
+              px-4
+              py-2.5
+              text-[12px]
+              font-semibold
+              text-slate-500
+              transition
+              hover:border-blue-300
+              hover:text-[#173cff]
+            "
+          >
+            <RotateCcw size={14} />
+            Reiniciar cotización
+          </button>
+        )}
       </div>
     </aside>
   );
 }
 
-function SummaryRow({
-  icon: Icon,
-  label,
-  value,
-  highlight = false,
-}) {
+function SummaryRow({ icon: Icon, label, value, highlight = false }) {
+  const isEmpty = value == null || value === "";
+
   return (
     <div className="flex gap-4 py-3.5 first:pt-1">
       <div
@@ -180,13 +249,15 @@ function SummaryRow({
             font-semibold
             leading-5
             ${
-              highlight
-                ? "text-[#173cff]"
-                : "text-[#07112d]"
+              isEmpty
+                ? "text-slate-400"
+                : highlight
+                  ? "text-[#173cff]"
+                  : "text-[#07112d]"
             }
           `}
         >
-          {value}
+          {isEmpty ? PENDING : value}
         </p>
       </div>
     </div>

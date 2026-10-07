@@ -1,4 +1,9 @@
-export default function ChatMessage({ children }) {
+import { useState } from "react";
+import { formatTime } from "../../utils/formatQuote";
+
+export default function ChatMessage({ children, time }) {
+  const [mountedTime] = useState(() => formatTime());
+
   return (
     <div className="mb-4 flex items-start gap-3">
       <div
@@ -36,7 +41,7 @@ export default function ChatMessage({ children }) {
         </div>
 
         <p className="mt-1 pl-1 text-[10px] text-slate-400">
-          10:24
+          {time ?? mountedTime}
         </p>
       </div>
     </div>

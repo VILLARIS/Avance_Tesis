@@ -1,7 +1,10 @@
+import useQuoteFlow from "../../hooks/useQuoteFlow";
 import ChatPanel from "./ChatPanel";
 import QuoteSummary from "./QuoteSummary";
 
 export default function QuoteAssistant() {
+    const flow = useQuoteFlow();
+
     return (
         <section
             id="cotizador"
@@ -76,8 +79,8 @@ export default function QuoteAssistant() {
             lg:grid-cols-[1.75fr_0.85fr]
           "
                 >
-                    <ChatPanel />
-                    <QuoteSummary />
+                    <ChatPanel flow={flow} />
+                    <QuoteSummary flow={flow} />
                 </div>
             </div>
         </section>

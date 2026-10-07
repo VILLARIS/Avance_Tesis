@@ -1,16 +1,21 @@
 export default function QuickOptions({
   options = [],
-  active = null,
+  selected = [],
+  onSelect,
+  disabled = false,
 }) {
   return (
     <div className="mb-4 flex flex-wrap gap-2 pl-12">
       {options.map((option) => {
-        const isActive = option === active;
+        const isSelected = selected.includes(option.value);
 
         return (
           <button
-            key={option}
+            key={option.value}
             type="button"
+            onClick={() => onSelect?.(option.value)}
+            disabled={disabled}
+            aria-pressed={isSelected}
             className={`
               rounded-full
               border
@@ -20,9 +25,11 @@ export default function QuickOptions({
               font-semibold
               transition-all
               duration-200
+              disabled:cursor-not-allowed
+              disabled:opacity-60
 
               ${
-                isActive
+                isSelected
                   ? `
                     border-[#173cff]
                     bg-[#173cff]
@@ -40,7 +47,7 @@ export default function QuickOptions({
               }
             `}
           >
-            {option}
+            {option.label}
           </button>
         );
       })}
